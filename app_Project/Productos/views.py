@@ -2,50 +2,44 @@ from rest_framework import status
 from rest_framework.response import Response 
 from rest_framework.views import APIView
 from Productos.serializers import productosSerializer
-from django.http import HttpResponse, JsonResponse
 from Productos.models import Productos
-import json
-from django.views.decorators.csrf import csrf_exempt
-from django.template import loader
+from django.http import Http404
 
 # Create your views here.
 
 class ProductoView(APIView):
 
-  def get(self, request):
-    producto = Productos.objects.all()
-    list = productosSerializer(producto, many=True)
-    return Response(list.data, status=status.HTTP_200_OK)
-  
-  def get_one(self, request, pk):
+  def get_object(self, pk):
     try:
       producto = Productos.objects.get(id=pk)
+      return producto
     except Productos.DoesNotExist:
-      return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    one_producto = productosSerializer(producto, many=True)
-    Response(one_producto.data, status=status.HTTP_200_OK)
+      raise Http404
 
-  def delete(self, request, pk):
-    try:
-      producto = Productos.objects.get(id=pk)
-    except Productos.DoesNotExist:
-      return Response(status=status.HTTP_404_NOT_FOUND)
-    
+  
+  def get(self, request, pk=None):
+    if pk == None:
+      productos = Productos.objects.all()
+      all_productos = productosSerializer(productos, many=True)
+      return Response(all_productos.data, status=status.HTTP_200_OK)
+    else:
+      producto = self.get_object(pk)
+      object_producto = productosSerializer(producto)
+      return Response(object_producto.data, status=status.HTTP_200_OK)
+
+  def delete(self, request, pk, format=None):
+    producto = self.get_object(pk)
+    print(producto)
     producto.delete()
-    Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_200_OK)
 
   def put(self, request, pk):
-    try:
-      producto = Productos.objects.get(id=pk)
-    except Productos.DoesNotExist:
-      return Response(status=status.HTTP_404_NOT_FOUND)
-    
+    producto = self.get_object(pk)
     actualizar = productosSerializer(producto, data=request.data)
 
     if actualizar.is_valid():
       actualizar.save()
-      Response(actualizar.data)
+      return Response(actualizar.data)
     return Response(actualizar.errors, status=status.HTTP_400_BAD_REQUEST)
   
   def post(self, request):
@@ -53,8 +47,8 @@ class ProductoView(APIView):
 
     if nuevo_producto.is_valid():
       nuevo_producto.save()
-      Response(nuevo_producto.data, status=status.HTTP_200_OK)
-    Response(nuevo_producto.errors, status=status.HTTP_400_BAD_REQUEST)    
+      return Response(nuevo_producto.data, status=status.HTTP_200_OK)
+    return Response(nuevo_producto.errors, status=status.HTTP_400_BAD_REQUEST)    
 
 
 
