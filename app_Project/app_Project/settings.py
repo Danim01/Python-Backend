@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Productos',
-    'app_users',
+    'productos',
+    'users',
     'rest_framework',
     'rest_framework_simplejwt',
 ]
@@ -139,4 +139,4 @@ REST_FRAMEWORK = {
 
 # Esto sirve para decirle a django que voy a utilizar mi modelo personalizado
 # de usuarios que contiene su modelo de usuario
-# AUTH_USER_MODEL = 'users_app.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'

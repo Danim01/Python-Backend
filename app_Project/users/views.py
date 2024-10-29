@@ -3,35 +3,34 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import APIView 
 from rest_framework.response import Response 
-from app_users.models import CustomUser
-from app_users.serializers import CustomUserSerializer, OutputSerializar
+from users.models import CustomUser
+from users.serializers import CustomUserSerializer, OutputSerializer
 
 class SignUp(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        print(request.data)
         User = CustomUserSerializer(data = request.data)
         # print(User, request.data)
         User.is_valid(raise_exception=True)
         
-        if CustomUser.objects.filter(name = User.validated_data['name']).exists():
-            return Response({"error": "El nombre de usuario ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+        if CustomUser.objects.filter(email = User.validated_data['email']).exists():
+            return Response({"error": "El correo electrónico ya existe"}, status=status.HTTP_400_BAD_REQUEST)
 
         # El doble ** sirve para desempaquetar datos uno por uno de un diccionario
-        user = CustomUser.objects.create(**User.validated_data).save()
+        user = CustomUser.objects.create(**User.validated_data)
 
         refresh = RefreshToken.for_user(user)
 
-        user_salida = OutputSerializar({
+        user_salida = OutputSerializer({
             "refresh_token": str(refresh),
-            "access": str(refresh.access_token),
+            "access_token": str(refresh.access_token),
             "user_id": user.id,
             "name": user.name,
-            "last_name": user.last_name,
             "age": user.age,
-            "address": user.address,
-            "country": user.country
         })
+
         return Response(data=user_salida.data, status=status.HTTP_201_CREATED )
     
     def get_object(self, pk):

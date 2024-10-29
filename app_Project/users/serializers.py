@@ -1,4 +1,4 @@
-from app_users.models import CustomUser
+from users.models import CustomUser
 from rest_framework import serializers  
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -9,8 +9,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     # country = serializers.CharField()
     class Meta:
         model = CustomUser
-        fields = ['name', 'last_name', 'age', 'address', 'country']
+        fields = ['id', 'name', 'last_name', 'age', 'email', 'password']
 
-class OutputSerializar(serializers.Serializer):
+class OutputSerializer(serializers.Serializer):
     accessToken = serializers.CharField(source='access_token')
     refreshToken = serializers.CharField(source='refresh_token')
+    name = serializers.CharField()
