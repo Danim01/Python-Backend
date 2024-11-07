@@ -1,7 +1,7 @@
 from rest_framework import status 
 from rest_framework.response import Response 
 from rest_framework.views import APIView
-from productos.serializers import productosSerializer
+from productos.serializers import productosSerializer, UserProductosSerializer
 from productos.models import Productos
 from django.http import Http404
 from rest_framework.permissions import AllowAny
@@ -51,3 +51,26 @@ class ProductoView(APIView):
       nuevo_producto.save()
       return Response(nuevo_producto.data, status=status.HTTP_200_OK)
     return Response(nuevo_producto.errors, status=status.HTTP_400_BAD_REQUEST)    
+
+
+class UserProductsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+      serializer = UserProductos.object.get(id=pk)
+      productos = UserProductosSerializer(serializer)
+      return Response(data=productos.data, status=status.HTTP_200_OK)
+
+      pass
+
+      
+    def post(self, request):
+        serialized = UsersProductSerializer(data=request.data)
+        serialized.is_valid(raise_exception=True)
+
+        # if UsersProducts.objects.filter(username=serialized.validated_data['product']).exists():
+        #     return Response("Purchase already exists.", status=status.HTTP_400_BAD_REQUEST)
+
+        users_products = UsersProducts.objects.create(**serialized.validated_data)
+
+        return Response({"message": "Successfully transaction"}, status=status.HTTP_201_CREATED)
