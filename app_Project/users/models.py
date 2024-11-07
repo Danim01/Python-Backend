@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .managers import CustomUserManager
 
 class CustomUser(AbstractUser):
     # Eliminar el campo username
@@ -14,19 +15,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'age']
 
-    # Definir los nombres relacionados al modelo y a sus permisos
-    # por unos únicos para evitar conflictos con el modelo user de django
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='customuser_groups',
-        blank=True,
-    )
-    
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='customuser_permissions',
-        blank=True,
-    )
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
