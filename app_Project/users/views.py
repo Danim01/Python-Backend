@@ -4,13 +4,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import APIView 
 from rest_framework.response import Response 
 from users.models import CustomUser
-from users.serializers import CustomUserSerializer, OutputSerializer
+from users.serializers import CustomUserSerializer, OutputSerializer, LogInOutputSerializer, ProfileOutputSerializer, LogInInputSerializer
 
 class SignUp(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        print(request.data)
+
         User = CustomUserSerializer(data = request.data)
         # print(User, request.data)
         User.is_valid(raise_exception=True)
@@ -50,6 +50,48 @@ class SignUp(APIView):
             User = CustomUserSerializer(Users)
             return Response(User.data)
         
+class Login(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+
+        User = LogInInputSerializer(data = request.data)
+        User.is_valid(raise_exception=True)
+
+        try:
+            username = CustomUser.objects.get(name = User.validated_data['name'])
+        except CustomUser.DoesNotExist:
+            return Response("Name or password is incorrect", status=status.HTTP_400_BAD_REQUEST)
+
+        is_password_correct = username.check_password(User.validated_data['password'])
+        if is_password_correct is False:
+            return Response("Name or password is incorrect", status=status.HTTP_400_BAD_REQUEST)
+
+        refresh = RefreshToken.for_user(username)
+
+        User = LogInOutputSerializer({
+            "name": username.name,
+            "email": username.email,
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token)
+        })
+
+        return Response(data = User.data, status=status.HTTP_202_ACCEPTED)
+
+class Profile(APIView):
+
+    def get(self, request):
+
+        User = ProfileOutputSerializer({
+            "name": request.username.name,
+            "email": request.username.email,
+            "age": request.username.age,
+
+        })
+
+        return Response(data = User.data, status=status.HTTP_200_OK)
+
+
 # class SignUp(APIView):
 #     permission_classes = [AllowAny]
 

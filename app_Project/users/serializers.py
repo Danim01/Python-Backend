@@ -15,3 +15,18 @@ class OutputSerializer(serializers.Serializer):
     accessToken = serializers.CharField(source='access_token')
     refreshToken = serializers.CharField(source='refresh_token')
     name = serializers.CharField()
+
+class LogInInputSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    password = serializers.CharField(min_length=8)
+
+class LogInOutputSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    email = serializers.Serializer()
+    accessToken = serializers.CharField(source='access_token')
+    refreshToken = serializers.CharField(source='refresh_token')
+
+class ProfileOutputSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    email = serializers.EmailField()
+    age = serializers.IntegerField()
