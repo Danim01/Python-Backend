@@ -2,9 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response 
 from rest_framework.views import APIView
 from productos.serializers import productosSerializer, UserProductosSerializer
-from productos.models import Productos
+from productos.models import Productos, UserProductos
 from django.http import Http404
 from rest_framework.permissions import AllowAny
+from datetime import date
 
 # Create your views here.
 
@@ -56,12 +57,13 @@ class ProductoView(APIView):
 class UserProductsView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, pk):
-      serializer = UserProductos.object.get(id=pk)
-      productos = UserProductosSerializer(serializer)
-      return Response(data=productos.data, status=status.HTTP_200_OK)
-
-      pass
+    def get(self, request, user_id: int = None):
+      if user_id:
+        user_products = UserProductos.objects.filter(user_id=user_id)
+      else:
+        user_products = UserProductos.objects.all()
+      serializer = UsersProductSerializer(user_products, many=True)
+      return Response(data=serializer.data, status=status.HTTP_200_OK)
 
       
     def post(self, request):
@@ -74,3 +76,16 @@ class UserProductsView(APIView):
         users_products = UsersProducts.objects.create(**serialized.validated_data)
 
         return Response({"message": "Successfully transaction"}, status=status.HTTP_201_CREATED)
+
+class UserProductsDateView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, date_from: date = None, date_to: date = None):
+        if date_from and date_to:
+          user_products = UserProductos.objects.filter(id=request.user.id, selling_date__range=(date_from, date_to))
+          serializer = UserProductosSerializer(user_products, many=True)
+          return Response(serializer.data)
+
+
+# selling_date__gt=(date_from) mayor que
+# selling_date__lt=(date_from) manor que

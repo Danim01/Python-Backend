@@ -33,22 +33,22 @@ class SignUp(APIView):
 
         return Response(data=user_salida.data, status=status.HTTP_201_CREATED )
     
-    def get_object(self, pk):
-        try:
-            list_user = CustomUser.objects.get(id=pk)
-            return (list_user)
-        except CustomUser.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    # def get_object(self, pk):
+    #     try:
+    #         list_user = CustomUser.objects.get(id=pk)
+    #         return (list_user)
+    #     except CustomUser.DoesNotExist:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def get(self, request, pk=None):
-        if pk == None:
-            Users = CustomUser.objects.all()
-            list_users = CustomUserSerializer(Users, many=True)
-            return Response(list_users.data)
-        else:
-            Users = self.get_object(pk)
-            User = CustomUserSerializer(Users)
-            return Response(User.data)
+    # def get(self, request, pk=None):
+    #     if pk == None:
+    #         Users = CustomUser.objects.all()
+    #         list_users = CustomUserSerializer(Users, many=True)
+    #         return Response(list_users.data)
+    #     else:
+    #         Users = self.get_object(pk)
+    #         User = CustomUserSerializer(Users)
+    #         return Response(User.data)
         
 class Login(APIView):
     permission_classes = [AllowAny]
@@ -61,11 +61,11 @@ class Login(APIView):
         try:
             username = CustomUser.objects.get(name = User.validated_data['name'])
         except CustomUser.DoesNotExist:
-            return Response("Name or password is incorrect", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Name is incorrect", status=status.HTTP_400_BAD_REQUEST)
 
-        is_password_correct = username.check_password(User.validated_data['password'])
-        if is_password_correct is False:
-            return Response("Name or password is incorrect", status=status.HTTP_400_BAD_REQUEST)
+        # is_password_correct = username.check_password(User.validated_data['password'])
+        # if is_password_correct is False:
+        #     return Response("password is incorrect", status=status.HTTP_400_BAD_REQUEST)
 
         refresh = RefreshToken.for_user(username)
 
