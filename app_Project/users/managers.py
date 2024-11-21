@@ -1,6 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
+"""
+El manager tiene los métodos necesarios para la interacción del modelo con la BD
+"""
 
 class CustomUserManager(BaseUserManager):
     """
@@ -15,6 +18,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_("The Email must be set"))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
+        # Sirve para encriptar la contraseña 
         user.set_password(password)
         user.save()
         return user

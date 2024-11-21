@@ -1,11 +1,11 @@
 from django.urls import path
-from . import views 
-from rest_framework_simplejwt import views as jwt_views
+from .views import SignUp, Profile 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-  path('', views.SignUp.as_view()),
-  path('signUp/', views.SignUp.as_view()),
-  path('login/', views.Login.as_view()),
-  path('profile/', views.Profile.as_view()),
-  path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh')
+  path('signup/', SignUp.as_view()),
+  path('login/', TokenObtainPairView.as_view()),
+  path('profile/', Profile.as_view()),
+  # Debe estar para poder ejecutar la api de los token y refresh
+  path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh')
 ]

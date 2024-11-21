@@ -10,3 +10,4 @@ class UserProductosSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProductos
         fields = ['id', 'selling_date', 'products_amount', 'client', 'product']
+        depth = 1

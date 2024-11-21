@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'age']
 
+    # Crea una instancia de la clase manager para crear la relación entre el modelo y la BD
     objects = CustomUserManager()
 
     def __str__(self):
